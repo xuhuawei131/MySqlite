@@ -49,6 +49,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             text_result_sum.setText("total:"+sum);
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        InsertDBHelper.getInstance().destory();
+    }
+
     private void addTask(){
         new Thread(new Runnable() {
             @Override
