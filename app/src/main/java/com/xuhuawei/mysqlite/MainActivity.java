@@ -8,8 +8,14 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.xuhuawei.mysqlite.beans.ChatBean;
+import com.xuhuawei.mysqlite.beans.TaskBean;
 import com.xuhuawei.mysqlite.helper.InsertDBHelper;
 import com.xuhuawei.mysqlite.helper.QuerryDBHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.xuhuawei.mysqlite.beans.TaskBean.TYPE_IMSERT;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Button btn_insert;
@@ -40,10 +46,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         if (view.getId()==R.id.btn_insert){
-            addTask();
+            addTask1();
         }else if(view.getId()==R.id.btn_querry){
             ChatBean bean=QuerryDBHelper.getInstance().getLastChatBean();
-            text_result_querry.setText(bean.uid+":"+bean.content);
+            if(bean!=null){
+                text_result_querry.setText(bean.uid+":"+bean.content);
+            }
         }else if(view.getId()==R.id.btn_querry_sum){
             int sum=QuerryDBHelper.getInstance().getTotalNum();
             text_result_sum.setText("total:"+sum);
@@ -60,18 +68,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         new Thread(new Runnable() {
             @Override
             public void run() {
-                for (int i=0;i<10000;i++){
-                    ChatBean bean= ChatBean.obtain();
-                    bean.content="MsgOne"+i;
-                    bean.date=System.nanoTime();
-                    bean.groupid=0;
-                    bean.uid=i;
-                    Log.v("xhw",bean.uid+"-"+bean.content);
-                    InsertDBHelper.getInstance().addWriteTask(0,bean);
+                int index=0;;
+                for (int j=0;j<100;j++){
+                    TaskBean task=new TaskBean();
+                    task.index=j;
+                    List<ChatBean> arrayList=new ArrayList<ChatBean>(100);
+                    for (int i=0;i<100;i++){
+                        ChatBean bean= ChatBean.obtain();
+                        bean.content="MsgOne"+i;
+                        bean.date=System.nanoTime();
+                        bean.groupid=0;
+                        bean.uid=index++;
+                        arrayList.add(bean);
+
+                    }
+                    task.arrayList=arrayList;
+                    task.operate=TYPE_IMSERT;
+                    InsertDBHelper.getInstance().addWriteTask(task);
                 }
             }
         }).start();
-
+    }
+    private void addTask1(){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -81,10 +99,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     bean.date=System.nanoTime();
                     bean.groupid=0;
                     bean.uid=i;
-                    Log.v("xhw",bean.uid+"-"+bean.content);
+                    bean.index=i;
                     InsertDBHelper.getInstance().addWriteTask(0,bean);
                 }
             }
         }).start();
     }
+
 }

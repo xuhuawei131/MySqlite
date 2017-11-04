@@ -7,6 +7,7 @@ import android.support.v4.util.Pools;
  */
 
 public class ChatBean {
+    public int index=0;
     public String content;
     public int groupid;
     public long date;
