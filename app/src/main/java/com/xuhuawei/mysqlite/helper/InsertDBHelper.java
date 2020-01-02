@@ -53,7 +53,7 @@ public class InsertDBHelper extends Thread {
     public void run() {
         Looper.prepare();
         looper = Looper.myLooper();
-        handler = new Handler() {
+        handler = new Handler(looper) {
             @Override
             public void handleMessage(Message msg) {
                 doTask(msg);
